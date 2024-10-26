@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Client</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #response { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Interaction avec l'IA</h1>
+    <label for="question">Posez votre question :</label>
+    <input type="text" id="question" />
+    <button onclick="ask()">Demander</button>
+
+    <div id="response"></div>
+
+    <script>
+        const BASE_URL = "https://nom-de-ton-projet.up.railway.app"; // Remplace par l'URL de ton projet
+
+        async function ask() {
+            const question = document.getElementById('question').value;
+            const response = await fetch(`${BASE_URL}/ask`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question })
+            });
+            const data = await response.json();
+            const responseDiv = document.getElementById('response');
+
+            if (data.answer) {
+                responseDiv.innerText = "Réponse de l'IA : " + data.answer;
+            } else {
+                responseDiv.innerText = "Erreur : Aucune réponse fournie par le serveur.";
+            }
+        }
+    </script>
+</body>
+</html>
