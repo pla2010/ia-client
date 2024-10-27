@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    <table>
+        <tr>
+            <th>Question</th>
+            <th>Réponse</th>
+            <th>Action</th>
+        </tr>
+        {% for question, answer in data.items() %}
+        <tr>
+            <td>{{ question }}</td>
+            <td>{{ answer }}</td>
+            <td><button onclick="deleteQuestion('{{ question }}')">Supprimer</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <script>
+        function deleteQuestion(question) {
+            fetch("/admin/delete_question", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "deleted") {
+                    alert("Question supprimée avec succès");
+                    location.reload();
+                } else {
+                    alert("Erreur lors de la suppression");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
