@@ -1,40 +1,41 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Q&A</title>
+    <title>Question Answering System</title>
+    <style>
+        /* Ajoute un style de base pour une apparence simple */
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #response { margin-top: 10px; font-weight: bold; }
+    </style>
 </head>
 <body>
-    <h1>Pose ta question à l'IA</h1>
-    <input type="text" id="question" placeholder="Pose une question...">
-    <button id="askButton">Envoyer</button>
-    <p id="response"></p>
+    <h1>Posez une question</h1>
+    <input type="text" id="question" placeholder="Votre question">
+    <button onclick="askQuestion()">Envoyer</button>
+    <div id="response"></div>
+    <a href="/admin">Accéder à l'interface admin</a>
 
     <script>
-        document.getElementById('askButton').addEventListener('click', async function() {
-            const question = document.getElementById('question').value;
-            const responseElement = document.getElementById('response');
-
-            try {
-                const response = await fetch('https://my-ai-production.up.railway.app/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ question: question }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Erreur de réseau : ' + response.statusText);
+        function askQuestion() {
+            const question = document.getElementById("question").value;
+            fetch("/handle_question", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "known" || data.status === "similar") {
+                    document.getElementById("response").innerText = data.response + " (Réponse pertinente?)";
+                    // Ici on peut ajouter les boutons Oui/Non pour demander à l'utilisateur
+                } else {
+                    document.getElementById("response").innerText = "Réponse inconnue. Veuillez fournir une réponse.";
+                    // On peut aussi ajouter un champ pour que l'utilisateur fournisse une réponse
                 }
-
-                const data = await response.json();
-                responseElement.textContent = data.answer || 'Pas de réponse trouvée.';
-            } catch (error) {
-                responseElement.textContent = 'Erreur : ' + error.message;
-            }
-        });
+            });
+        }
     </script>
 </body>
 </html>
